@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
-import 'profile_screen.dart';
+import 'task_list_screen.dart'; // Changed from ProfileScreen
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,7 +14,29 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool isLoading = false;
+  bool _rememberMe = false;
   String? errorMessage; // 👈 for showing login failure
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserPreferences();
+  }
+
+  void _loadUserPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool rememberMePreference = prefs.getBool('remember_me_preference') ?? false;
+    String? rememberedEmail = prefs.getString('remembered_email');
+
+    setState(() {
+      _rememberMe = rememberMePreference;
+      if (_rememberMe && rememberedEmail != null) {
+        emailController.text = rememberedEmail;
+      }
+    });
+  }
+
+
 
   void handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
@@ -26,16 +48,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final response = await loginUser(emailController.text.trim(), passwordController.text);
 
+    if (!mounted) return;
+
     setState(() => isLoading = false);
 
     if (response['success']) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setInt("user_id", response['user']['id']);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ProfileScreen()));
+
+      if (_rememberMe) {
+        await prefs.setBool('remember_me_preference', true);
+        await prefs.setString('remembered_email', emailController.text.trim());
+      } else {
+        await prefs.setBool('remember_me_preference', false);
+        await prefs.remove('remembered_email');
+      }
+      if (mounted) {
+        // Navigate to TaskListScreen instead of ProfileScreen
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TaskListScreen()));
+      }
     } else {
-      setState(() {
-        errorMessage = "Wrong email or password"; // 👈 Show inline error
-      });
+      if (mounted) {
+        setState(() {
+          errorMessage = response['message'] ?? "Wrong email or password";
+        });
+      }
     }
   }
 
@@ -135,6 +172,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(height: 16),
 
+                      // Remember Me Checkbox
+                      CheckboxListTile(
+                        title: Text("Remember Me"),
+                        value: _rememberMe,
+                        onChanged: (bool? newValue) {
+                          setState(() {
+                            _rememberMe = newValue ?? false;
+                          });
+                        },
+                        controlAffinity: ListTileControlAffinity.leading, // Checkbox on the left
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                      SizedBox(height: 8), // Adjusted spacing
                       // Error Message
                       if (errorMessage != null)
                         Text(
@@ -142,7 +193,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
                         ),
                       SizedBox(height: 8),
-
                       // Login button
                       SizedBox(
                         width: double.infinity,
@@ -188,5 +238,12 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }

@@ -74,11 +74,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => LoginScreen()),
-    );
+    // Only remove the user session ID, keep other preferences like 'remembered_email'
+    // and 'remember_me_preference' if they exist.
+    await prefs.remove('user_id'); 
+
+    if (mounted) { // Check if the widget is still in the widget tree
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => LoginScreen()),
+      );
+    }
   }
 
   @override

@@ -11,9 +11,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   bool isLoading = false;
+
+  @override
+  void dispose() {
+    fullNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
 
   void handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
@@ -28,12 +40,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       addressController.text,
     );
 
+    if (!mounted) return; // Check if widget is still in the tree
+
     setState(() => isLoading = false);
 
     final message = response['message'] ?? 'Registration failed';
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 
-    if (response['success']) Navigator.pop(context); // Back to login
+    if (response['success'] && mounted) Navigator.pop(context); // Back to login
   }
 
   @override
@@ -135,6 +149,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
                           if (value.length < 6) {
                             return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+
+                      // Confirm Password
+                      TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: "Confirm Password",
+                          prefixIcon: Icon(Icons.lock_outline), // Using a slightly different lock icon
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != passwordController.text) {
+                            return 'Passwords do not match';
                           }
                           return null;
                         },

@@ -43,3 +43,35 @@ Future<Map<String, dynamic>> getUserProfile(int id) async {
 );
   return json.decode(response.body);
 }
+
+Future<Map<String, dynamic>> getAssignedWorks(int workerId) async {
+  final url = Uri.parse('$baseUrl/get_works.php');
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'worker_id': workerId}),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      return {'success': false, 'message': 'Server error: ${response.statusCode}'};
+    }
+  } catch (e) {
+    return {'success': false, 'message': 'An error occurred: $e'};
+  }
+}
+
+Future<Map<String, dynamic>> submitWorkCompletion(int workId, int workerId, String submissionText) async {
+  final url = Uri.parse('$baseUrl/submit_work.php');
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'work_id': workId, 'worker_id': workerId, 'submission_text': submissionText}),
+    );
+    return jsonDecode(response.body);
+  } catch (e) {
+    return {'success': false, 'message': 'An error occurred: $e'};
+  }
+}
