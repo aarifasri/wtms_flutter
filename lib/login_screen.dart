@@ -3,8 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
 import 'task_list_screen.dart'; // Changed from ProfileScreen
 import 'register_screen.dart';
+<<<<<<< HEAD
 import 'worker_home_page.dart';
 
+=======
+>>>>>>> 8c09b11f198c75afa0393fb462aad473cd62d512
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -67,7 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       if (mounted) {
         // Navigate to TaskListScreen instead of ProfileScreen
+<<<<<<< HEAD
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => WorkerHomePage()));
+=======
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => TaskListScreen()));
+>>>>>>> 8c09b11f198c75afa0393fb462aad473cd62d512
       }
     } else {
       if (mounted) {

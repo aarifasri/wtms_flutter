@@ -36,6 +36,7 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
   return json.decode(response.body);
 }
 
+<<<<<<< HEAD
 Future<Map<String, dynamic>> getUserProfile(int userId) async {
   final response = await http.post(
     Uri.parse("http://localhost/wtms_api/get_user_profile.php"),
@@ -46,6 +47,16 @@ Future<Map<String, dynamic>> getUserProfile(int userId) async {
 }
 
 
+=======
+Future<Map<String, dynamic>> getUserProfile(int id) async {
+  final response = await http.post(
+  Uri.parse("$baseUrl/profile.php"),
+  body: {'id': id.toString()},
+);
+  return json.decode(response.body);
+}
+
+>>>>>>> 8c09b11f198c75afa0393fb462aad473cd62d512
 Future<Map<String, dynamic>> getAssignedWorks(int workerId) async {
   final url = Uri.parse('$baseUrl/get_works.php');
   try {
@@ -76,6 +87,7 @@ Future<Map<String, dynamic>> submitWorkCompletion(int workId, int workerId, Stri
   } catch (e) {
     return {'success': false, 'message': 'An error occurred: $e'};
   }
+<<<<<<< HEAD
 }
 
 
@@ -173,3 +185,6 @@ Future<Map<String, dynamic>> updateUserProfile(
 
   return jsonDecode(response.body);
 }
+=======
+}
+>>>>>>> 8c09b11f198c75afa0393fb462aad473cd62d512

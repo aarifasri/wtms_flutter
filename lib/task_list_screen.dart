@@ -7,8 +7,11 @@ import 'task_model.dart';
 import 'dart:developer' as developer; // Import developer for logging
 import 'submit_completion_screen.dart'; // We'll create this next
 import 'profile_screen.dart'; // To navigate to profile
+<<<<<<< HEAD
 import 'submission_history_screen.dart'; // Make sure this exists
 
+=======
+>>>>>>> 8c09b11f198c75afa0393fb462aad473cd62d512
 
 class TaskListScreen extends StatefulWidget {
   @override
@@ -122,6 +125,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+<<<<<<< HEAD
   title: Text("My Assigned Tasks"),
   actions: [
     IconButton(
@@ -149,6 +153,25 @@ class _TaskListScreenState extends State<TaskListScreen> {
     ),
   ],
 ),
+=======
+        title: Text("My Assigned Tasks"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _fetchTasks, // Refresh button
+          ),
+        ],
+      ),
+>>>>>>> 8c09b11f198c75afa0393fb462aad473cd62d512
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _errorMessage != null
